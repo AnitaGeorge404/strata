@@ -1,0 +1,49 @@
+name: Strata
+description: Turn your GitHub activity into a living geological cross-section for your profile.
+author: AnitaGeorge404
+branding:
+  icon: layers
+  color: orange
+
+inputs:
+  github_user:
+    description: Whose activity to draw.
+    default: ${{ github.repository_owner }}
+  github_token:
+    description: Token used to read public activity. Use a PAT to include private contribution counts.
+    default: ${{ github.token }}
+  months:
+    description: How many months of rock to show (6-36).
+    default: '24'
+  output_dir:
+    description: Folder the SVGs are written to.
+    default: strata
+  commit:
+    description: Commit and push the updated SVGs.
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - name: Deposit a new layer
+      shell: bash
+      run: node "${{ github.action_path }}/src/index.js"
+      env:
+        STRATA_USER: ${{ inputs.github_user }}
+        STRATA_MONTHS: ${{ inputs.months }}
+        STRATA_OUT: ${{ inputs.output_dir }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+
+    - name: Commit
+      if: inputs.commit == 'true'
+      shell: bash
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add "${{ inputs.output_dir }}"
+        if git diff --cached --quiet; then
+          echo "No new layer today."
+        else
+          git commit -m "Deposit a new layer"
+          git push
+        fi

@@ -1,0 +1,15 @@
+{
+  "name": "strata",
+  "version": "1.0.0",
+  "description": "Your GitHub activity as a living geological cross-section.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "demo": "node src/index.js --demo --out examples",
+    "start": "node src/index.js"
+  }
+}
